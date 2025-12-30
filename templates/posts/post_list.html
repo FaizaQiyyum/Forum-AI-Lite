@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="search-bar">
+    <form method="get" action="">
+        <input type="text" name="q" placeholder="Search posts..." value="{{ request.GET.q|default:'' }}">
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+</section>
+
+<div class="posts-grid">
+    {% for post in posts %}
+    <article class="post-card">
+        <div class="post-header">
+            <h2>{{ post.title }}</h2>
+            <span class="post-date">{{ post.created_at|date:"M d, Y" }}</span>
+        </div>
+
+        <div class="post-summary">
+            <span class="badge">AI Summary</span>
+            <p>{{ post.summary }}</p>
+        </div>
+
+        <details class="post-original">
+            <summary>View Original Post</summary>
+            <p>{{ post.content }}</p>
+        </details>
+
+        <div class="post-actions">
+            <div class="vote-controls">
+                <a href="{% url 'vote_post' post.pk 'up' %}" class="vote-btn up">▲</a>
+                <span class="vote-count">{{ post.votes }}</span>
+                <a href="{% url 'vote_post' post.pk 'down' %}" class="vote-btn down">▼</a>
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <div class="no-posts">
+        <p>No posts found. Be the first to start a discussion!</p>
+        <a href="{% url 'post_create' %}" class="btn btn-primary">Create Post</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

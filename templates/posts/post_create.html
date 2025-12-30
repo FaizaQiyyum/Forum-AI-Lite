@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Create New Discussion</h2>
+    <p class="form-desc">Share your thoughts, and our AI will summarize them for the community.</p>
+
+    <form method="post" class="post-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Title</label>
+            {{ form.title }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.content.id_for_label }}">Content</label>
+            {{ form.content }}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'post_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Submit Post</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

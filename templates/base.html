@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum AI Summarizer</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <h1 class="logo"><a href="{% url 'post_list' %}">Forum<span class="highlight">AI</span></a></h1>
+            <nav>
+                <a href="{% url 'post_create' %}" class="btn btn-primary">+ New Post</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2024 Forum AI Summarizer. Built for Hackathon.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,32 @@
+Project Name:
+Forum Intelligence Layer: AI Summarizer & Sentiment Engine
+
+Short Description (Tagline):
+An intelligent "Layer 2" for Foru.ms that uses the API to automatically generate Thread Summaries and Sentiment Badges in real-time.
+
+Track:
+⚡ AI & Intelligence (LLM-Powered Features)
+
+Inspiration:
+Community managers on large forums (like Foru.ms) often struggle to keep up with hundreds of long threads. We wanted to build an "Intelligence Layer" that solves this. Inspired by the "TL;DR Bot" idea in the hackathon prompt, we built a system that connects to the Foru.ms API, reads the live discussion, and instantly generates a concise summary and a "Sentiment Health Check" (Positive/Critical/Neutral).
+
+What it does:
+1.  **Connects to Foru.ms API:** Our backend (`posts/services.py`) uses a real API Key to fetch thread content dynamically.
+2.  **Auto-Summarization:** When a user requests a summary, we pull the text from the API and process it (using Noun Phrase Extraction and rudimentary NLP) to create a "TL;DR".
+3.  **Sentiment Analysis:** It instantly tags threads with "Sentiment Badges" so moderators can spot toxic or critical threads at a glance.
+4.  **Hybrid Fallback:** If the API is unreachable (or for local dev), it gracefully falls back to a local simulation mode, ensuring the UI never breaks.
+
+How we built it:
+*   **Backend:** Python & Django. We configured it to act as a proxy between the React Frontend and the Foru.ms API.
+*   **API Integration:** We implemented a custom `fetch_thread_from_api` service that authenticates with Bearer tokens to retrieve live data.
+*   **AI Logic:** Used `TextBlob` for natural language processing (Sentiment Polarity and Noun Phrase extraction).
+*   **Frontend:** React + Tailwind CSS for a diverse, responsive UI.
+
+Challenges we ran into:
+Debugging the correct API endpoints for the new Foru.ms instance was tricky! We initially hit 404s because of slight URL structure differences (`api.foru.ms` vs `foru.ms/api`). Validating the "Hybrid" mode (API vs Local) required careful error handling to ensure the app didn't crash when keys were missing.
+
+Accomplishments that we're proud of:
+We are proud that we successfully integrated the **Real API**. Seeing the logs switch from "Local Mode" to "✅ SUCCESS: Data successfully fetched from Foru.ms API" was a huge win. We're also proud of the modular architecture—the "Intelligence Service" is completely decoupled from the database.
+
+What's next for Forum Intelligence:
+We plan to upgrade the summarization engine from `TextBlob` to a true LLM (like OpenAI GPT-4) now that the API piping is working. We also want to add "Thread Graphing" to visualize who is replying to whom via the API relationships.
