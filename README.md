@@ -171,9 +171,6 @@ This creates 3 sample threads with realistic discussions.
 
 ---
 
-## 📸 Screenshots
-
-*(Add 3-5 screenshots here when submitting to Devpost)*
 
 ---
 
@@ -223,10 +220,6 @@ MIT License - feel free to use this for your own projects!
 Built for the Foru.ms x v0 Hackathon (Dec 2025)
 
 ---
-
-## 📞 Questions?
-
-Open an issue or reach out via [your email/twitter]
 
 ---
 
