@@ -191,13 +191,7 @@ This creates 3 sample threads with realistic discussions.
 
 ---
 
-## 🚧 Future Enhancements
 
-- [ ] Upgrade to GPT-4 for better summaries
-- [ ] Real-time sentiment tracking dashboard
-- [ ] Thread recommendation engine
-- [ ] Multi-language support
-- [ ] Export summaries as PDF
 
 ---
 
