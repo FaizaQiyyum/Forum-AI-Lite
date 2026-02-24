@@ -217,4 +217,4 @@ Built for the Foru.ms x v0 Hackathon (Dec 2025)
 
 ---
 
-**⭐ If you found this helpful, please star the repo!**
+**⭐ If you found this helpful, star the repo!**
