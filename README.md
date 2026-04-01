@@ -191,16 +191,6 @@ This creates 3 sample threads with realistic discussions.
 
 ---
 
-
-
----
-
-## 📝 License
-
-MIT License - feel free to use this for your own projects!
-
----
-
 ## 🙏 Acknowledgments
 
 - **Foru.ms** for the headless forum API
@@ -211,10 +201,5 @@ MIT License - feel free to use this for your own projects!
 
 ## 👨‍💻 Author
 
-Built for the Foru.ms x v0 Hackathon (Dec 2025)
-
----
-
----
-
+Built for the Foru.ms x v0 Hackathon 
 **⭐ If you found this helpful, star the repo!**
