@@ -78,13 +78,11 @@ This project demonstrates:
    **Terminal 2** (Frontend):
    ```bash
    cd client
-   python -m http.server 8080
+   python -m http.server
    ```
 
 6. **Open your browser**
-   ```
-   http://localhost:8080
-   ```
+   
 
 ---
 
