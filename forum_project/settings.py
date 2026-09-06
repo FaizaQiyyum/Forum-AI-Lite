@@ -13,9 +13,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-hackathon-dummy-key-for-local-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False' if os.getenv('VERCEL') else 'True').lower() == 'true'
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
+DEFAULT_ALLOWED_HOSTS = 'localhost,127.0.0.1,forumailite.vercel.app'
+VERCEL_HOSTS = [os.getenv('VERCEL_URL', ''), os.getenv('VERCEL_PROJECT_PRODUCTION_URL', '')]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv(
+    'DJANGO_ALLOWED_HOSTS', DEFAULT_ALLOWED_HOSTS
+).split(',') if host.strip()]
+ALLOWED_HOSTS.extend(host for host in VERCEL_HOSTS if host and host not in ALLOWED_HOSTS)
 
 
 # Application definition
@@ -124,5 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080'
+    'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080,https://forumailite.vercel.app'
 ).split(',') if origin.strip()]
