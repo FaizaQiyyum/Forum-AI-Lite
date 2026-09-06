@@ -3,3 +3,5 @@ djangorestframework
 django-cors-headers
 textblob
 requests
+dj-database-url
+psycopg[binary]

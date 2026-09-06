@@ -169,13 +169,26 @@ This creates 3 sample threads with realistic discussions.
 
 ### Production Configuration
 
-The repository contains a Django API and a static React client. Deploy the Django API separately, or proxy `/api` from the frontend host to the Django deployment. Before the `app.jsx` script in `client/index.html`, set the API origin when the API is on another host:
+Vercel serves the React client and routes `/api/*` to the Django function through `vercel.json`. In Vercel project settings, set **Root Directory** to the repository root (`.`), then add a Postgres database integration and set its `DATABASE_URL` environment variable. SQLite is kept for local development; it is not durable on Vercel serverless functions.
 
-```html
-<script>window.FORUM_AI_API_BASE = "https://your-api.example.com/api";</script>
+Set these Vercel environment variables:
+
+```env
+DJANGO_SECRET_KEY=replace-with-a-long-random-secret
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=forumailite.vercel.app
+CORS_ALLOWED_ORIGINS=https://forumailite.vercel.app
+DATABASE_URL=your-postgres-connection-string
 ```
 
-For the Django deployment, set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `DJANGO_ALLOWED_HOSTS` to the API hostname, and `CORS_ALLOWED_ORIGINS` to the frontend URL. Redeploy both the frontend and API after changing these values. To enable full TextBlob topic extraction, run `python -m textblob.download_corpora` in the backend environment; summaries still fall back safely when optional corpus data is unavailable.
+After deployment, run migrations and seed the production database from a machine with the same `DATABASE_URL`:
+
+```bash
+python manage.py migrate
+python populate_demo.py
+```
+
+Redeploy after changing environment variables. To enable full TextBlob topic extraction, run `python -m textblob.download_corpora` in the backend environment; summaries still fall back safely when optional corpus data is unavailable.
 
 ---
 
