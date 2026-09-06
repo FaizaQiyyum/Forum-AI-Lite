@@ -1,6 +1,10 @@
 const { useState, useEffect, useMemo } = React;
 
-const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE = window.FORUM_AI_API_BASE || (
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8000/api"
+        : "/api"
+);
 
 function App() {
     const [activeThreadId, setActiveThreadId] = useState(null);
@@ -8,7 +12,10 @@ function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAiSidebarOpen, setIsAiSidebarOpen] = useState(false);
 
-    const refreshApp = () => setTriggerRefresh(prev => prev + 1);
+    const refreshApp = (newThreadId = null) => {
+        if (newThreadId) setActiveThreadId(newThreadId);
+        setTriggerRefresh(prev => prev + 1);
+    };
 
     const handleDeleteThread = async (threadId) => {
         if (!confirm("Are you sure you want to delete this entire conversation?")) return;
@@ -550,27 +557,45 @@ function EmptyState({ onNewThread }) {
 }
 
 function CreateThreadModal({ onSuccess }) {
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        setSubmitting(true);
         const title = e.target.title.value;
         const firstPost = e.target.firstPost.value;
         const author = e.target.author.value || "Anonymous";
 
-        const tRes = await fetch(`${API_BASE}/threads/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title })
-        });
-        const tData = await tRes.json();
+        try {
+            const tRes = await fetch(`${API_BASE}/threads/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+            });
+            const tData = await tRes.json();
+            if (!tRes.ok || !tData.id) {
+                throw new Error(tData.detail || "Unable to create the discussion.");
+            }
 
-        await fetch(`${API_BASE}/threads/${tData.id}/posts/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: firstPost, author_name: author })
-        });
+            const pRes = await fetch(`${API_BASE}/threads/${tData.id}/posts/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: firstPost, author_name: author })
+            });
+            if (!pRes.ok) {
+                throw new Error("The discussion was created, but its first post could not be saved.");
+            }
 
-        document.getElementById("create-thread-modal").close();
-        onSuccess();
+            document.getElementById("create-thread-modal").close();
+            onSuccess(tData.id);
+        } catch (err) {
+            console.error("Failed to create thread", err);
+            setError(err.message || "Unable to create the discussion. Please try again.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -596,7 +621,10 @@ function CreateThreadModal({ onSuccess }) {
                         <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Your Name</label>
                         <input name="author" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition font-medium text-slate-800" placeholder="Optional (defaults to Anonymous)" />
                     </div>
-                    <button type="submit" className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-xl shadow-indigo-200 transform active:scale-95 mt-2">Create Discussion</button>
+                    {error && <p className="text-sm text-rose-600" role="alert">{error}</p>}
+                    <button type="submit" disabled={submitting} className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-xl shadow-indigo-200 transform active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                        {submitting ? "Creating..." : "Create Discussion"}
+                    </button>
                 </form>
             </div>
         </dialog>

@@ -60,7 +60,7 @@ This project demonstrates:
 
 3. **Install dependencies**
    ```bash
-   pip install django djangorestframework django-cors-headers textblob requests
+   pip install -r requirements.txt
    ```
 
 4. **Run database migrations**
@@ -82,7 +82,7 @@ This project demonstrates:
    ```
 
 6. **Open your browser**
-   
+   The frontend uses the local API at `http://127.0.0.1:8000/api` when opened on localhost.
 
 ---
 
@@ -166,6 +166,16 @@ This creates 3 sample threads with realistic discussions.
 1. Click any thread in the sidebar
 2. Click "Refresh Analysis ↻" in the AI sidebar
 3. Watch the summary appear!
+
+### Production Configuration
+
+The repository contains a Django API and a static React client. Deploy the Django API separately, or proxy `/api` from the frontend host to the Django deployment. Before the `app.jsx` script in `client/index.html`, set the API origin when the API is on another host:
+
+```html
+<script>window.FORUM_AI_API_BASE = "https://your-api.example.com/api";</script>
+```
+
+For the Django deployment, set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `DJANGO_ALLOWED_HOSTS` to the API hostname, and `CORS_ALLOWED_ORIGINS` to the frontend URL. Redeploy both the frontend and API after changing these values. To enable full TextBlob topic extraction, run `python -m textblob.download_corpora` in the backend environment; summaries still fall back safely when optional corpus data is unavailable.
 
 ---
 

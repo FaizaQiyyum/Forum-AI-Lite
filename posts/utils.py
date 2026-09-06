@@ -1,4 +1,5 @@
 from textblob import TextBlob
+from textblob.exceptions import MissingCorpusError
 import requests
 
 # --- FORU.MS API CONFIG ---
@@ -63,7 +64,11 @@ def generate_summary(text, thread_id=None, sentence_count=3):
     blob = TextBlob(text)
     
     # 2. Extract Key Topics (Noun Phrases)
-    noun_phrases = list(set(blob.noun_phrases))
+    try:
+        noun_phrases = list(set(blob.noun_phrases))
+    except MissingCorpusError:
+        # Keep sentiment and extractive summaries available without optional NLP data.
+        noun_phrases = []
     topics = ", ".join(noun_phrases[:3]).title()
     
     # 3. Key Sentiment
@@ -73,15 +78,20 @@ def generate_summary(text, thread_id=None, sentence_count=3):
     elif polarity < -0.1: sentiment = "Critical"
     else: sentiment = "Neutral"
 
+    try:
+        sentences = list(blob.sentences)
+    except MissingCorpusError:
+        return f"Discussion sentiment: {sentiment}. {text[:200]}"
+
     # 4. Handle Short Text
-    if len(blob.sentences) <= sentence_count:
+    if len(sentences) <= sentence_count:
         if not topics:
             return f"A short discussion ({sentiment}) with no clear key topics detected yet."
         return f"Key topics discussed: {topics}. The overall sentiment is {sentiment}."
 
     # 5. Handle Long Text (Extractive Summary)
     sentence_scores = {}
-    for sent in blob.sentences:
+    for sent in sentences:
         score = 0
         for word in sent.words:
             if word.lower() in noun_phrases:
@@ -89,7 +99,7 @@ def generate_summary(text, thread_id=None, sentence_count=3):
         sentence_scores[str(sent)] = score
         
     sorted_sents = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:sentence_count]
-    summary_sentences = [str(s) for s in blob.sentences if str(s) in sorted_sents]
+    summary_sentences = [str(s) for s in sentences if str(s) in sorted_sents]
     extractive_summary = " ".join(summary_sentences)
     
     return f"Key topics: {topics}. \n\nSummary: {extractive_summary}"
