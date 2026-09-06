@@ -92,16 +92,26 @@ function App() {
 function Sidebar({ activeThreadId, onSelectThread, triggerRefresh, onNewThread, isOpen, onDeleteThread }) {
     const [threads, setThreads] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
+        setLoading(true);
+        setLoadError("");
         fetch(`${API_BASE}/threads/`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`API request failed (${res.status})`);
+                return res.json();
+            })
             .then(data => {
                 setThreads(data);
                 setLoading(false);
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                setLoadError("Threads could not be loaded. Check the API deployment.");
+                setLoading(false);
+            });
     }, [triggerRefresh]);
 
     const filteredThreads = useMemo(() => {
@@ -150,6 +160,8 @@ function Sidebar({ activeThreadId, onSelectThread, triggerRefresh, onNewThread, 
                     <div className="space-y-3 p-2">
                         {[1, 2, 3].map(i => <div key={i} className="h-16 bg-slate-200/50 rounded-xl animate-pulse"></div>)}
                     </div>
+                ) : loadError ? (
+                    <div className="p-4 text-center text-rose-500 text-xs">{loadError}</div>
                 ) : filteredThreads.length === 0 ? (
                     <div className="p-8 text-center text-slate-400 text-xs">
                         {searchTerm ? "No matches found." : "No conversations yet."}
